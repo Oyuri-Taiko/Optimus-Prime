@@ -9,10 +9,10 @@ def prime(n):
                 return False
         return True
 
-for n in range(1,300):
-  optimus = '{} is a prime number.'
-  optimusNot = '{} is a not a prime number.'
+optimus = '{} is a prime number.'
+optimusNot = '{} is a not a prime number.'
 
+for n in range(1,300):
   if (prime(n)):
     print(optimus.format(n))
   else:
