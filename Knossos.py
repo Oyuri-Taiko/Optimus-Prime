@@ -1,81 +1,82 @@
-# lab generator -- Randomized Prim Algorithm
-
-## Imports
 import random
 import time
+import os
 
-
+cls = lambda: os.system('cls')
 ## Functions
 
 # Creating starting and ending point
-
-def setEntrance():
+def setExits():
 	for i in range(0, labWidth):
 		if (lab[1][i] == 'c'):
 			lab[0][i] = 'c'
+			start.append(0)
 			start.append(i)
-		
 			break
 
-def setExit():
 	for i in range(labWidth-1, 0, -1):
 		if (lab[labHeight-2][i] == 'c'):
 			lab[labHeight-1][i] = 'c'
+			end.append(labHeight-1)
 			end.append(i)
 			break
+	
 
-## Prints
-
+# Print
 def printLab():
+	print('\n')
 	for x in lab:
 		for y in x:
 			if y == 'c':
-				print(" ", end = " ")
+				print(" ", end = "")
 			elif y == 'w':
-				print("X", end = " ")
+				print("█", end = "")
+			elif y == 'p':
+				print("▒", end = "")
+			elif y > 0:
+				print(".", end = "")
 			else:
-				print(y, end = " ")
+				print("", end = " ")
 		print()	
 
-#Zwykły nie działa normalnie
-
-def printSolvedLab(): 
+# Search for the path start-end
+def findPath(x):
 	for i in range(len(lab)):
 		for j in range(len(lab[i])):
-			print(str(lab[i][j]).ljust(2),end=' ')
-		print()
-
-# Printing the shortest path
-def ariadna():
-	for x in lab:
-		for y in x:
-			if y == 'p':
-				print("|", end = " ")
-			elif y == 'w':
-				print("X", end = " ")
-			else:
-				print(" ", end = " ")
-		print()	
-##
-
-		
-# Finding the way to the end
-
-def tezeusz(k):
-	for i in range(len(lab)):
-		for j in range(len(lab[i])):
-			if lab[i][j] == k:
+			if lab[i][j] == x:
 				if lab[i-1][j] == 0:
-					lab[i-1][j] = k + 1
+					lab[i-1][j] = x + 1
 				if lab[i][j-1] == 0:
-					lab[i][j-1] = k + 1
+					lab[i][j-1] = x + 1
 				if lab[i+1][j] == 0:
-					lab[i+1][j] = k + 1
+					lab[i+1][j] = x + 1
 				if lab[i][j+1] == 0 :
-					lab[i][j+1] = k + 1
+					lab[i][j+1] = x + 1
+
+# Highlight the shortest route
+def tracePath(x):
+	i, j = end
+	x = lab[i][j]
+	lab[end[0]][end[1]] = 'p'
+	printLab()
+	while x > 1:
+		time.sleep(0.1)
+		if lab[i - 1][j] == x-1:
+			i, j = i-1, j
+		elif lab[i][j - 1] == x-1:
+			i, j = i, j-1
+		elif lab[i + 1][j] == x-1:
+			i, j = i+1, j
+		elif lab[i][j + 1] == x-1:
+			i, j = i, j+1
+		x -= 1
+		lab[i][j] = 'p'
+		printLab()
+
+
 
 # Swapping data 
-def rubble(x, y):
+def swapCells(x, y):
 	for i in range(0, labHeight):
 		for j in range(0, labWidth):
 			if (lab[i][j] == x):
@@ -103,12 +104,12 @@ def surroundingCells(rand_wall):
 wall = 'w'
 cell = 'c'
 unvisited = 'u'
-k = 0
+currentStep = 0
 labHeight = int(input("Rzędy: "))
 labWidth = int(input("Kolumny: "))
 lab = []
-start = [0]
-end = [labHeight-1]
+start = []
+end = []
 print("\n")
 
 
@@ -125,11 +126,11 @@ starting_labHeight = int(random.random()*labHeight)
 starting_labWidth = int(random.random()*labWidth)
 if (starting_labHeight == 0):
 	starting_labHeight += 1
-if (starting_labHeight == labHeight-1):
+elif (starting_labHeight == labHeight-1):
 	starting_labHeight -= 1
 if (starting_labWidth == 0):
 	starting_labWidth += 1
-if (starting_labWidth == labWidth-1):
+elif (starting_labWidth == labWidth-1):
 	starting_labWidth -= 1
 
 # Mark it as cell and add surrounding walls to the list
@@ -304,51 +305,30 @@ while (walls):
 
 
 # Mark the remaining unvisited cells as walls
-rubble('u', 'w')
+swapCells('u', 'w')
 
 
 # Set entrance and exit
-setEntrance()
-setExit()
+setExits()
 
-# Print final lab
 printLab()
 
-input("\nCzas przez niego przejść \n")
-print("Punkt początkowy to:", start)
-print("Punkt końcowy to:", end, "\n")
-
-rubble('c', 0)
+swapCells('c', 0)
 lab[start[0]][start[1]] = 1
 
 # Finding possible paths to the end
 while lab[end[0]][end[1]] == 0:
-    k += 1
-    tezeusz(k)
+	time.sleep(0.1)
+	cls
+	currentStep += 1
+	findPath(currentStep)
+	printLab()
 
-# Backtracking the shortest path
-i, j = end
-k = lab[i][j]
-while k > 1:
-	if lab[i - 1][j] == k-1:
-		i, j = i-1, j
-		lab[i][j] = 'p'
-		k-=1
-	elif lab[i][j - 1] == k-1:
-		i, j = i, j-1
-		lab[i][j] = 'p'
-		k-=1
-	elif lab[i + 1][j] == k-1:
-		i, j = i+1, j
-		lab[i][j] = 'p'
-		k-=1
-	elif lab[i][j + 1] == k-1:
-		i, j = i, j+1
-		lab[i][j] = 'p'
-		k -= 1	
+	
+tracePath(currentStep) # Backtracking the shortest path
 
-lab[end[0]][end[1]] = 'p'
+
 print("\n")
-ariadna()
+
 
 input()
