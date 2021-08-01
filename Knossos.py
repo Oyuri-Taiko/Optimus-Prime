@@ -31,8 +31,10 @@ def printLab():
 		for y in x:
 			if y == 'c':
 				print(" ", end = " ")
-			else:
+			elif y == 'w':
 				print("X", end = " ")
+			else:
+				print(y, end = " ")
 		print()	
 
 #Zwykły nie działa normalnie
@@ -47,12 +49,12 @@ def printSolvedLab():
 def ariadna():
 	for x in lab:
 		for y in x:
-			if isinstance(y, int):
-				print(" ", end = " ")
+			if y == 'p':
+				print("|", end = " ")
 			elif y == 'w':
 				print("X", end = " ")
 			else:
-				print("|", end = " ")
+				print(" ", end = " ")
 		print()	
 ##
 
@@ -319,11 +321,12 @@ print("Punkt końcowy to:", end, "\n")
 rubble('c', 0)
 lab[start[0]][start[1]] = 1
 
+# Finding possible paths to the end
 while lab[end[0]][end[1]] == 0:
     k += 1
     tezeusz(k)
 
-
+# Backtracking the shortest path
 i, j = end
 k = lab[i][j]
 while k > 1:
@@ -346,7 +349,6 @@ while k > 1:
 
 lab[end[0]][end[1]] = 'p'
 print("\n")
-rubble('p', '|')
 ariadna()
 
 input()
