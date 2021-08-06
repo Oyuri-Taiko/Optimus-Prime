@@ -33,7 +33,7 @@ def printLab():
 			elif y == 'p':
 				print("▒", end = "")
 			elif y > 0:
-				print(".", end = "")
+				print("·", end = "")
 			else:
 				print("", end = " ")
 		print()	
