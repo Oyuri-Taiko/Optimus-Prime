@@ -2,7 +2,6 @@ import random
 import time
 import os
 
-cls = lambda: os.system('cls')
 ## Functions
 
 # Creating starting and ending point
@@ -73,6 +72,7 @@ def tracePath(x):
 			i, j = i, j+1
 		x -= 1
 		lab[i][j] = 'p'
+		os.system('cls')
 		printLab()
 
 
@@ -316,7 +316,7 @@ lab[start[0]][start[1]] = 1
 # Finding possible paths to the end
 while lab[end[0]][end[1]] == 0:
 	time.sleep(0.1)
-	cls
+	os.system('cls')
 	currentStep += 1
 	findPath(currentStep)
 	printLab()
