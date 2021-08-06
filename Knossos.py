@@ -39,6 +39,7 @@ def printLab():
 				print("", end = " ")
 		print()	
 
+
 # Search for the path start-end
 def findPath(x):
 	for i in range(len(lab)):
@@ -52,6 +53,7 @@ def findPath(x):
 					lab[i+1][j] = x + 1
 				if lab[i][j+1] == 0 :
 					lab[i][j+1] = x + 1
+
 
 # Highlight the shortest route
 def tracePath(x):
@@ -111,8 +113,6 @@ lab = []
 start = []
 end = []
 print("\n")
-
-
 
 # Denote all cells as unvisited
 for i in range(0, labHeight):
@@ -303,11 +303,8 @@ while (walls):
 			walls.remove(wall)
 	
 
-
 # Mark the remaining unvisited cells as walls
 swapCells('u', 'w')
-
-
 # Set entrance and exit
 setExits()
 
@@ -326,9 +323,5 @@ while lab[end[0]][end[1]] == 0:
 
 	
 tracePath(currentStep) # Backtracking the shortest path
-
-
-print("\n")
-
 
 input()
