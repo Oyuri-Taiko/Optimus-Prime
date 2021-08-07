@@ -44,22 +44,43 @@ def setStartingWalls():
 def checkWalls():
 	if (rand_wall[1] != 0): # left
 		if (lab[rand_wall[0]][rand_wall[1]-1] == 'u' and lab[rand_wall[0]][rand_wall[1]+1] == 'c'):
-			return 1
+			return 'Left'
 
 	if (rand_wall[0] != 0): # upper
 		if (lab[rand_wall[0]-1][rand_wall[1]] == 'u' and lab[rand_wall[0]+1][rand_wall[1]] == 'c'):
-			return 2
+			return 'Top'
 		
 	if (rand_wall[0] != labHeight-1): # bottom
 		if (lab[rand_wall[0]+1][rand_wall[1]] == 'u' and lab[rand_wall[0]-1][rand_wall[1]] == 'c'):
-			return 3
+			return 'Bottom'
 
 	if (rand_wall[1] != labWidth-1): # right
 		if (lab[rand_wall[0]][rand_wall[1]+1] == 'u' and lab[rand_wall[0]][rand_wall[1]-1] == 'c'):
-			return 4
+			return 'Right'
 		
-	return 5
+	return 'Invalid'
 
+def buildWall(wall):
+	if wall == 'Right':
+		if (lab[rand_wall[0]][rand_wall[1]+1] != 'c'):
+			lab[rand_wall[0]][rand_wall[1]+1] = 'w'
+		if ([rand_wall[0], rand_wall[1]+1] not in walls):
+			walls.append([rand_wall[0], rand_wall[1]+1])
+	elif wall == 'Down':
+		if (lab[rand_wall[0]+1][rand_wall[1]] != 'c'):
+			lab[rand_wall[0]+1][rand_wall[1]] = 'w'
+		if ([rand_wall[0]+1, rand_wall[1]] not in walls):
+			walls.append([rand_wall[0]+1, rand_wall[1]])
+	elif wall == 'Up':	
+		if (lab[rand_wall[0]-1][rand_wall[1]] != 'c'):
+			lab[rand_wall[0]-1][rand_wall[1]] = 'w'
+		if ([rand_wall[0]-1, rand_wall[1]] not in walls):
+			walls.append([rand_wall[0]-1, rand_wall[1]])
+	elif wall == 'Left':
+		if (lab[rand_wall[0]][rand_wall[1]-1] != 'c'):
+			lab[rand_wall[0]][rand_wall[1]-1] = 'w'
+		if ([rand_wall[0], rand_wall[1]-1] not in walls):
+			walls.append([rand_wall[0], rand_wall[1]-1])
 
 # Find number of surrounding cells
 def surroundingCells(rand_wall):
@@ -81,35 +102,23 @@ def fillLab():
 	rand_wall = walls[int(random.random()*len(walls))-1]  # Pick a random wall
 	selectedWall = checkWalls() # Check which wall was chosen at random
 	
-	if selectedWall !=5:
+	if selectedWall != 'Invalid':
 		s_cells = surroundingCells(rand_wall)	
 		if (s_cells < 2):
 			# Denote the new path	
 			lab[rand_wall[0]][rand_wall[1]] = 'c'
 
-			if (rand_wall[1] != labWidth-1) and selectedWall != 1:	# Mark right cell as wall
-				if (up(lab, rand_wall) != 'c'):
-					lab[rand_wall[0]][rand_wall[1]+1] = 'w'
-				if ([rand_wall[0], rand_wall[1]+1] not in walls):
-					walls.append([rand_wall[0], rand_wall[1]+1])
+			if (rand_wall[1] != labWidth-1) and selectedWall != 'Left':	# Mark right cell as wall
+				buildWall('Right')
 
-			if (rand_wall[0] != labHeight-1) and selectedWall != 2:	# Mark bottom cell as wall
-				if (lab[rand_wall[0]+1][rand_wall[1]] != 'c'):
-					lab[rand_wall[0]+1][rand_wall[1]] = 'w'
-				if ([rand_wall[0]+1, rand_wall[1]] not in walls):
-					walls.append([rand_wall[0]+1, rand_wall[1]])
+			if (rand_wall[0] != labHeight-1) and selectedWall != 'Top':	# Mark bottom cell as wall
+				buildWall('Down')
 
-			if (rand_wall[0] != 0) and selectedWall != 3:	# Mark upper cell as wall
-				if (lab[rand_wall[0]-1][rand_wall[1]] != 'c'):
-					lab[rand_wall[0]-1][rand_wall[1]] = 'w'
-				if ([rand_wall[0]-1, rand_wall[1]] not in walls):
-					walls.append([rand_wall[0]-1, rand_wall[1]])
+			if (rand_wall[0] != 0) and selectedWall != 'Bottom':	# Mark upper cell as wall
+				buildWall('Up')
 
-			if (rand_wall[1] != 0) and selectedWall != 4:	# Mark left cell as wall
-				if (lab[rand_wall[0]][rand_wall[1]-1] != 'c'):
-					lab[rand_wall[0]][rand_wall[1]-1] = 'w'
-				if ([rand_wall[0], rand_wall[1]-1] not in walls):
-					walls.append([rand_wall[0], rand_wall[1]-1])
+			if (rand_wall[1] != 0) and selectedWall != 'Right':	# Mark left cell as wall
+				buildWall('Left')
 
 			for wall in walls:	# Delete random wall from the wall list
 				if (wall[0] == rand_wall[0] and wall[1] == rand_wall[1]):
@@ -172,8 +181,6 @@ def animatedPrint():
 	printLab()
 
 
-def up(array, arg):
-	return array[arg[0]][arg[1]+1]
 # Search for the path start-end
 def findPath(step):
 	for i in range(len(lab)):
@@ -193,9 +200,8 @@ def findPath(step):
 def tracePath(step):
 	i, j = end
 	step = lab[i][j]
-	lab[end[0]][end[1]] = 'p'
-	printLab()
-	while step > 1:
+	while step > 0:
+		lab[i][j] = 'p'
 		if lab[i - 1][j] == step-1:
 			i, j = i-1, j
 		elif lab[i][j - 1] == step-1:
@@ -205,13 +211,11 @@ def tracePath(step):
 		elif lab[i][j + 1] == step-1:
 			i, j = i, j+1
 		step -= 1
-		lab[i][j] = 'p'
 		animatedPrint()
 
 def labSolver():
 	swapCells('c', 0) # Change cells for the sake of tracing path
 	lab[start[0]][start[1]] = 1
-
 
 	while lab[end[0]][end[1]] == 0: # Finding possible paths to the end
 		global currentStep
@@ -232,7 +236,6 @@ def swapCells(x, y):
 
 
 ## Main code
-
 wall = 'w'
 cell = 'c'
 unvisited = 'u'
